@@ -53,3 +53,6 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# source files and executable files of bochs emulator
+bochs/
