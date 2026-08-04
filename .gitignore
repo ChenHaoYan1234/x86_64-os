@@ -54,5 +54,6 @@ dkms.conf
 # debug information files
 *.dwo
 
-# source files and executable files of bochs emulator
-bochs/
+# bios of bochs emulator
+BIOS-bochs-latest
+VGABIOS-lgpl-latest.bin
