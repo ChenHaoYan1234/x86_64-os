@@ -1,0 +1,5 @@
+{
+    "nasm.extraFlags": [
+        "-I${workspaceFolder}/src/fat12.inc"
+    ]
+}

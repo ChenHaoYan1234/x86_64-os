@@ -1,5 +1,10 @@
     org 10000h
 
+    jmp Label_Start
+
+%include "fat12.inc"
+
+Label_Start:
     mov ax, cs
     mov ds, ax
     mov es, ax
