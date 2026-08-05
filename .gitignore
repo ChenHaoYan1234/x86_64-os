@@ -57,3 +57,9 @@ dkms.conf
 # bios of bochs emulator
 BIOS-bochs-latest
 VGABIOS-lgpl-latest.bin
+
+# binaries
+*.bin
+
+# floppy images
+*.img
