@@ -6,11 +6,13 @@ OBJCOPY = objcopy
 CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror
 LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
-OBJS = head.o $(patsubst %.c, %.o, $(wildcard *.c))
+OBJS_C = $(patsubst %.c, %.o, $(wildcard *.c))
+OBJS_ASM = head.o $(filter-out head.o, $(patsubst %.S, %.o, $(wildcard *.S)))
+OBJS = $(OBJS_ASM) $(OBJS_C)
 
 all: kernel.bin
 
-head.o: head.S
+%.o: %.S
 	$(CC) -E $< > $(basename $<).s
 	$(AS) --64 -o $@ $(basename $<).s
 
