@@ -58,7 +58,7 @@ dkms.conf
 BIOS-bochs-latest
 VGABIOS-lgpl-latest.bin
 
-# binaries
+# bootloader binaries
 *.bin
 
 # list files
@@ -66,3 +66,6 @@ VGABIOS-lgpl-latest.bin
 
 # floppy images
 *.img
+
+# gcc preprocessor files
+*.s
