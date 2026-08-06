@@ -8,7 +8,8 @@ LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
 OBJS_C = $(patsubst %.c, %.o, $(wildcard *.c))
 OBJS_ASM = head.o $(filter-out head.o, $(patsubst %.S, %.o, $(wildcard *.S)))
-OBJS = $(OBJS_ASM) $(OBJS_C)
+
+IMG = ../../bochs-vm/boot.img
 
 all: kernel.bin
 
@@ -19,13 +20,19 @@ all: kernel.bin
 %.o: %.c
 	$(CC) $(CCFLAGS) -c $< -o $@
 
-system: $(OBJS) kernel.lds
-	$(LD) $(LDFLAGS) -o system $(OBJS)
+system: $(OBJS_ASM) $(OBJS_C) kernel.lds
+	$(LD) $(LDFLAGS) -o system $(OBJS_ASM) $(OBJS_C)
 
 kernel.bin: system
 	$(OBJCOPY) -I elf64-x86-64 -S -R ".eh_frame" -R ".comment" -O binary system $@
 
 clean:
 	rm -f *.o *.s kernel.bin system
+
+install: all
+	mount $(IMG) /mnt -t vfat -o loop
+	cp kernel.bin /nt
+	sync
+	umount /mnt
 
 rebuild: clean all
