@@ -75,3 +75,6 @@ system
 
 # binaries of kernel
 kernel.bin
+
+# disassembled files
+*.dump
