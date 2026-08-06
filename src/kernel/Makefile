@@ -25,3 +25,5 @@ kernel.bin: system
 
 clean:
 	rm -f *.o *.s kernel.bin system
+
+rebuild: clean all
