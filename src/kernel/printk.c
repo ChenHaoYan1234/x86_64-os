@@ -1,7 +1,6 @@
 #include <stdarg.h>
 #include "printk.h"
 #include "lib.h"
-#include "linkage.h"
 
 int skip_atoi(const char **s)
 {

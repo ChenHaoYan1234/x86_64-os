@@ -1,4 +1,6 @@
 #include "printk.h"
+#include "gate.h"
+#include "trap.h"
 
 void Start_Kernel(void)
 {
@@ -53,13 +55,18 @@ void Start_Kernel(void)
     }
 
     color_printk(YELLOW, BLACK, "Hello, World!\n");
-    
-    /*
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdiv-by-zero"
-        i = 1 / 0; // test interrupt
-    #pragma GCC diagnostic pop
-    */
+
+    load_TR(8);
+
+    set_tss64(0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00,
+              0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00);
+
+    sys_vector_init();
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiv-by-zero"
+    i = 1 / 0; // test interrupt
+#pragma GCC diagnostic pop
 
     while (1)
         ;
