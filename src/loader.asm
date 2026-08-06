@@ -33,6 +33,18 @@ IDT_POINTER:
     dw IDT_END - IDT - 1
     dd IDT
 
+[SECTION gdt64]
+
+LABEL_GDT64: dq 0x0000000000000000
+LABEL_DESC_CODE64: dq 0x0020980000000000
+LABEL_DESC_DATA64: dq 0x0000920000000000
+
+GdtLen64 equ $ - LABEL_GDT64
+GdtPtr64 dw GdtLen64 - 1
+    dd LABEL_GDT64
+
+SelectorCode64 equ LABEL_DESC_CODE64 - LABEL_GDT64
+SelectorData64 equ LABEL_DESC_DATA64 - LABEL_GDT64
 
 [SECTION .s16]
 [BITS 16]
@@ -429,8 +441,94 @@ Label_SVGA_Mode_Info_Finish:
 
     jmp dword SelectorCode32:GO_TO_TMP_Protect
 
+[SECTION .s32]
+[BITS 32]
 GO_TO_TMP_Protect:
+; go to tmp long mode
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov ss, ax
+    mov esp, 7e00h
+
+    call support_long_mode
+    test eax, eax
+
+    jz no_support
+
+    jmp init_page_table
+
+no_support:
     jmp $
+
+init_page_table:
+; init template page table 0x90000
+    mov dword [0x90000], 0x91007
+    mov dword [0x90800], 0x91007
+    mov dword [0x91000], 0x92007
+    mov dword [0x92000], 0x000083
+    mov dword [0x92008], 0x200083
+    mov dword [0x92010], 0x400083
+    mov dword [0x92018], 0x600083
+    mov dword [0x92020], 0x800083
+    mov dword [0x92028], 0xa00083
+
+; load GDTR
+    db 0x66
+    lgdt [GdtPtr64]
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, 7e00h
+
+; open PAE
+    mov eax, cr4
+    bts eax, 5
+    mov cr4, eax
+
+; load cr3
+    mov eax, 0x90000
+    mov cr3, eax
+
+; enable long mode
+    mov ecx, 0c0000080h
+    rdmsr
+
+    bts eax, 8
+    wrmsr
+
+; open PE and paging
+    mov eax, cr0
+    bts eax, 0
+    bts eax, 31
+    mov cr0, eax
+
+    jmp $
+    jmp SelectorCode64:OffsetOfKernelFile
+
+[SECTION .s32lib]
+[BITS 32]
+support_long_mode:
+    push eax
+    push edx
+    mov eax, 0x80000000
+    cpuid
+    cmp eax, 0x80000001
+    setnb al
+    jb support_long_mode_done
+    mov eax, 0x80000001
+    cpuid
+    bt edx, 29
+    setc al
+support_long_mode_done:
+    movzx eax, al
+    pop edx
+    pop eax
+    ret
 
 [SECTION .s16lib]
 [BITS 16]
