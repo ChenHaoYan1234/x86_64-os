@@ -1,5 +1,6 @@
-#include "printk.h"
 #include "gate.h"
+#include "memory.h"
+#include "printk.h"
 #include "trap.h"
 
 void Start_Kernel(void)
@@ -63,10 +64,12 @@ void Start_Kernel(void)
 
     sys_vector_init();
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdiv-by-zero"
-    i = 1 / 0; // test interrupt
-#pragma GCC diagnostic pop
+    // #pragma GCC diagnostic push
+    // #pragma GCC diagnostic ignored "-Wdiv-by-zero"
+    //     i = 1 / 0; // test interrupt
+    // #pragma GCC diagnostic pop
+
+    init_memory();
 
     while (1)
         ;
