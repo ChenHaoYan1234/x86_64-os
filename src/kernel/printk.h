@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _PEINTK_H
-#define _PEINTK_H
 
 #include <stdarg.h>
 #include "font.h"
@@ -57,5 +55,3 @@ int vsprintf(char *buf, const char *fmt, va_list args);
 void putchar(unsigned int *fb, int Xsize, int x, int y, unsigned int FRcolor, unsigned int BKcolor, unsigned char font);
 
 int color_printk(unsigned int FRcolor, unsigned int BKcolor, const char *fmt, ...);
-
-#endif

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _LIB_H
-#define _LIB_H
 
 #define NULL 0
 
@@ -18,5 +16,3 @@ static inline int strlen(char * string) {
     );
     return __res;
 }
-
-#endif
