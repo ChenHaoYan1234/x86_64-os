@@ -4,6 +4,7 @@ LD = ld
 OBJCOPY = objcopy
 
 CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall
+LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
 OBJS = head.o $(patsubst %.c, %.o, $(wildcard *.c))
 
@@ -17,7 +18,7 @@ head.o: head.S
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 system: $(OBJS) kernel.lds
-	$(LD) -b elf64-x86-64 -o system $(OBJS) -T kernel.lds
+	$(LD) $(LDFLAGS) -o system $(OBJS)
 
 kernel.bin: system
 	$(OBJCOPY) -I elf64-x86-64 -S -R ".eh_frame" -R ".comment" -O binary system $@
