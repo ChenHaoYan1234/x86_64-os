@@ -34,7 +34,7 @@ clean:
 
 install: all
 	mount $(IMG) /mnt -t vfat -o loop
-	cp kernel.bin /nt
+	cp kernel.bin /mnt
 	sync
 	umount /mnt
 
