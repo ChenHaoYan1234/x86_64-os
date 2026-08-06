@@ -9,7 +9,7 @@ CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror
 LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
 OBJS_C = $(patsubst %.c, %.o, $(wildcard *.c))
-OBJS_ASM = head.o $(filter-out head.o, $(patsubst %.S, %.o, $(wildcard *.S)))
+OBJS_ASM = asm/head.o $(filter-out asm/head.o, $(patsubst asm/%.S, asm/%.o, $(wildcard asm/*.S)))
 
 IMG = ../../bochs-vm/boot.img
 
@@ -29,7 +29,8 @@ kernel.bin: system
 	$(OBJCOPY) -I elf64-x86-64 -S -R ".eh_frame" -R ".comment" -O binary system $@
 
 clean:
-	rm -f *.o *.s kernel.bin system
+	rm -f *.o kernel.bin system
+	rm -f asm/*.o asm/*.s
 
 install: all
 	mount $(IMG) /mnt -t vfat -o loop
