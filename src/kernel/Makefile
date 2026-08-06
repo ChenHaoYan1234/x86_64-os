@@ -3,6 +3,8 @@ AS = as
 LD = ld
 OBJCOPY = objcopy
 
+CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall
+
 OBJS = head.o $(patsubst %.c, %.o, $(wildcard *.c))
 
 all: kernel.bin
@@ -12,7 +14,7 @@ head.o: head.S
 	$(AS) --64 -o $@ $(basename $<).s
 
 %.o: %.c
-	$(CC) -mcmodel=large -fno-builtin -m64 -c $< -o $@
+	$(CC) $(CCFLAGS) -c $< -o $@
 
 system: $(OBJS) kernel.lds
 	$(LD) -b elf64-x86-64 -o system $(OBJS) -T kernel.lds
