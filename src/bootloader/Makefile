@@ -9,4 +9,4 @@ clean:
 	rm -f *.bin *.lst
 
 mbr: boot.bin
-	dd if=boot.bin of=../bochs-vm/boot.img bs=512 count=1 conv=notrunc
+	dd if=boot.bin of=../../bochs-vm/boot.img bs=512 count=1 conv=notrunc
