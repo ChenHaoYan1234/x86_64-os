@@ -507,7 +507,6 @@ init_page_table:
     bts eax, 31
     mov cr0, eax
 
-    jmp $
     jmp SelectorCode64:OffsetOfKernelFile
 
 [SECTION .s32lib]
