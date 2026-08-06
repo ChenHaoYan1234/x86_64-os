@@ -3,6 +3,8 @@ AS = as
 LD = ld
 OBJCOPY = objcopy
 
+INCLUDE_FLAGS = -I./includes
+
 CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror
 LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
@@ -14,11 +16,11 @@ IMG = ../../bochs-vm/boot.img
 all: kernel.bin
 
 %.o: %.S
-	$(CC) -E $< > $(basename $<).s
+	$(CC) $(INCLUDE_FLAGS) -E $< > $(basename $<).s
 	$(AS) --64 -o $@ $(basename $<).s
 
 %.o: %.c
-	$(CC) $(CCFLAGS) -c $< -o $@
+	$(CC) $(INCLUDE_FLAGS) $(CCFLAGS) -c $< -o $@
 
 system: $(OBJS_ASM) $(OBJS_C) kernel.lds
 	$(LD) $(LDFLAGS) -o system $(OBJS_ASM) $(OBJS_C)
