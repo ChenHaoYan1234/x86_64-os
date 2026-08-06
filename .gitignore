@@ -61,5 +61,8 @@ VGABIOS-lgpl-latest.bin
 # binaries
 *.bin
 
+# list files
+*.lst
+
 # floppy images
 *.img
