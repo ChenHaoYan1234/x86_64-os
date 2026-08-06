@@ -3,7 +3,7 @@ AS = as
 LD = ld
 OBJCOPY = objcopy
 
-CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall
+CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror
 LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
 
 OBJS = head.o $(patsubst %.c, %.o, $(wildcard *.c))
