@@ -69,6 +69,7 @@ VGABIOS-lgpl-latest.bin
 
 # gcc preprocessor files
 *.s
+*.i
 
 # ELF format kernel file
 system
