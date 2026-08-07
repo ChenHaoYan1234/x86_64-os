@@ -3,21 +3,23 @@
 #include "printk.h"
 #include "trap.h"
 
+struct GlobalMemoryDescriptor memory_management_struct = {{{0}}, 0};
+
 void Start_Kernel(void)
 {
     unsigned int *addr = (unsigned int *)0xffff800000a00000;
     int i;
 
-    Pos.XResolution = 800;
-    Pos.YResolution = 600;
+    Pos.x_resolution = 800;
+    Pos.y_resolution = 600;
 
-    Pos.XPosition = Pos.YPosition = 0;
+    Pos.x_position = Pos.y_position = 0;
 
-    Pos.XCharSize = 8;
-    Pos.YCharSize = 16;
+    Pos.x_char_size = 8;
+    Pos.y_char_size = 16;
 
-    Pos.FB_addr = (unsigned int *)0xffff800000a00000;
-    Pos.EB_length = (Pos.XResolution * Pos.YResolution * 4);
+    Pos.framebuffer = (unsigned int *)0xffff800000a00000;
+    Pos.fb_length = (Pos.x_resolution * Pos.y_resolution * 4);
 
     for (i = 0; i < 800 * 20; i++)
     {

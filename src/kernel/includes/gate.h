@@ -35,27 +35,27 @@
                              : "memory");  \
     } while (0)
 
-struct gate_struct
+struct GateStruct
 {
     unsigned char x[16];
 };
 
-extern struct gate_struct IDT_Table[];
-extern unsigned int TSS64_Table[26];
+extern struct GateStruct idt_table[];
+extern unsigned int tss64_table[26];
 
 static inline void set_intr_gate(unsigned int n, unsigned char ist, void *addr)
 {
-    _set_gate(IDT_Table + n, 0x8e, ist, addr); // P,DPL=0, TYPE=E
+    _set_gate(idt_table + n, 0x8e, ist, addr); // P,DPL=0, TYPE=E
 }
 
 static inline void set_trap_gate(unsigned int n, unsigned char ist, void *addr)
 {
-    _set_gate(IDT_Table + n, 0x8f, ist, addr); // P,DPL=0, TYPE=F
+    _set_gate(idt_table + n, 0x8f, ist, addr); // P,DPL=0, TYPE=F
 }
 
 static inline void set_system_gate(unsigned int n, unsigned char ist, void *addr)
 {
-    _set_gate(IDT_Table + n, 0xef, ist, addr); // P,DPL=3, TYPE=F
+    _set_gate(idt_table + n, 0xef, ist, addr); // P,DPL=3, TYPE=F
 }
 
 void set_tss64(unsigned long rsp0, unsigned long rsp1, unsigned long rsp2,
@@ -63,15 +63,15 @@ void set_tss64(unsigned long rsp0, unsigned long rsp1, unsigned long rsp2,
                unsigned long ist4, unsigned long ist5, unsigned long ist6,
                unsigned long ist7)
 {
-    *(unsigned long *)(TSS64_Table + 1) = rsp0;
-    *(unsigned long *)(TSS64_Table + 3) = rsp1;
-    *(unsigned long *)(TSS64_Table + 5) = rsp2;
+    *(unsigned long *)(tss64_table + 1) = rsp0;
+    *(unsigned long *)(tss64_table + 3) = rsp1;
+    *(unsigned long *)(tss64_table + 5) = rsp2;
 
-    *(unsigned long *)(TSS64_Table + 9) = ist1;
-    *(unsigned long *)(TSS64_Table + 11) = ist2;
-    *(unsigned long *)(TSS64_Table + 13) = ist3;
-    *(unsigned long *)(TSS64_Table + 15) = ist4;
-    *(unsigned long *)(TSS64_Table + 17) = ist5;
-    *(unsigned long *)(TSS64_Table + 19) = ist6;
-    *(unsigned long *)(TSS64_Table + 21) = ist7;
+    *(unsigned long *)(tss64_table + 9) = ist1;
+    *(unsigned long *)(tss64_table + 11) = ist2;
+    *(unsigned long *)(tss64_table + 13) = ist3;
+    *(unsigned long *)(tss64_table + 15) = ist4;
+    *(unsigned long *)(tss64_table + 17) = ist5;
+    *(unsigned long *)(tss64_table + 19) = ist6;
+    *(unsigned long *)(tss64_table + 21) = ist7;
 }

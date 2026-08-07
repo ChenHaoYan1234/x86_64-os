@@ -268,7 +268,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
     return str - buf;
 }
 
-void putchar(unsigned int *fb, int Xsize, int x, int y, unsigned int FRcolor, unsigned int BKcolor, unsigned char font)
+void putchar(unsigned int *framebuffer, int x_size, int x, int y, unsigned int front_color, unsigned int background_color, unsigned char font)
 {
     int i = 0, j = 0;
     unsigned int *addr = NULL;
@@ -278,22 +278,22 @@ void putchar(unsigned int *fb, int Xsize, int x, int y, unsigned int FRcolor, un
 
     for (i = 0; i < 16; i++)
     {
-        addr = fb + Xsize * (y + i) + x;
+        addr = framebuffer + x_size * (y + i) + x;
         testval = 0x100;
         for (j = 0; j < 8; j++)
         {
             testval = testval >> 1;
             if (*fontp & testval)
-                *addr = FRcolor;
+                *addr = front_color;
             else
-                *addr = BKcolor;
+                *addr = background_color;
             addr++;
         }
         fontp++;
     }
 }
 
-int color_printk(unsigned int FRcolor, unsigned int BKcolor, const char *fmt, ...)
+int color_printk(unsigned int front_color, unsigned int background_color, const char *fmt, ...)
 {
     int i = 0;
     int count;
@@ -315,42 +315,42 @@ int color_printk(unsigned int FRcolor, unsigned int BKcolor, const char *fmt, ..
         }
         if ((unsigned char)*(buf + count) == '\n')
         {
-            Pos.YPosition++;
-            Pos.XPosition = 0;
+            Pos.y_position++;
+            Pos.x_position = 0;
         }
         else if ((unsigned char)*(buf + count) == '\b')
         {
-            Pos.XPosition--;
-            if (Pos.XPosition < 0)
+            Pos.x_position--;
+            if (Pos.x_position < 0)
             {
-                Pos.XPosition = (Pos.XResolution / Pos.XCharSize - 1);
-                Pos.YPosition--;
-                if (Pos.YPosition < 0)
-                    Pos.YPosition = (Pos.YResolution / Pos.YCharSize - 1);
+                Pos.x_position = (Pos.x_resolution / Pos.x_char_size - 1);
+                Pos.y_position--;
+                if (Pos.y_position < 0)
+                    Pos.y_position = (Pos.y_resolution / Pos.y_char_size - 1);
             }
-            putchar(Pos.FB_addr, Pos.XResolution, Pos.XPosition * Pos.XCharSize, Pos.YPosition * Pos.YCharSize, FRcolor, BKcolor, ' ');
+            putchar(Pos.framebuffer, Pos.x_resolution, Pos.x_position * Pos.x_char_size, Pos.y_position * Pos.y_char_size, front_color, background_color, ' ');
         }
         else if ((unsigned char)*(buf + count) == '\t')
         {
-            line = ((Pos.XPosition + 8) & (~(8 - 1) - Pos.XPosition));
+            line = ((Pos.x_position + 8) & (~(8 - 1) - Pos.x_position));
         Label_tab:
             line--;
-            putchar(Pos.FB_addr, Pos.XResolution, Pos.XPosition * Pos.XCharSize, Pos.YPosition * Pos.YCharSize, FRcolor, BKcolor, ' ');
-            Pos.XPosition++;
+            putchar(Pos.framebuffer, Pos.x_resolution, Pos.x_position * Pos.x_char_size, Pos.y_position * Pos.y_char_size, front_color, background_color, ' ');
+            Pos.x_position++;
         }
         else
         {
-            putchar(Pos.FB_addr, Pos.XResolution, Pos.XPosition * Pos.XCharSize, Pos.YPosition * Pos.YCharSize, FRcolor, BKcolor, (unsigned char)*(buf + count));
-            Pos.XPosition++;
+            putchar(Pos.framebuffer, Pos.x_resolution, Pos.x_position * Pos.x_char_size, Pos.y_position * Pos.y_char_size, front_color, background_color, (unsigned char)*(buf + count));
+            Pos.x_position++;
         }
 
-        if (Pos.XPosition >= (Pos.XResolution / Pos.XCharSize))
+        if (Pos.x_position >= (Pos.x_resolution / Pos.x_char_size))
         {
-            Pos.YPosition++;
-            Pos.XPosition = 0;
+            Pos.y_position++;
+            Pos.x_position = 0;
         }
-        if (Pos.YPosition >= (Pos.YResolution / Pos.YCharSize))
-            Pos.YPosition = 0;
+        if (Pos.y_position >= (Pos.y_resolution / Pos.y_char_size))
+            Pos.y_position = 0;
     }
     return i;
 }

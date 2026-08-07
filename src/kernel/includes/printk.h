@@ -32,25 +32,25 @@ extern unsigned char font_ascii[256][16];
 
 char buf[4096] = {0};
 
-struct position
+struct Position
 {
-    int XResolution;
-    int YResolution;
+    int x_resolution;
+    int y_resolution;
 
-    int XPosition;
-    int YPosition;
+    int x_position;
+    int y_position;
 
-    int XCharSize;
-    int YCharSize;
+    int x_char_size;
+    int y_char_size;
 
-    unsigned int *FB_addr;
-    unsigned int EB_length;
+    unsigned int *framebuffer;
+    unsigned int fb_length;
 } Pos;
 
 int skip_atoi(const char **s);
 
 int vsprintf(char *buf, const char *fmt, va_list args);
 
-void putchar(unsigned int *fb, int Xsize, int x, int y, unsigned int FRcolor, unsigned int BKcolor, unsigned char font);
+void putchar(unsigned int *framebuffer, int x_size, int x, int y, unsigned int front_color, unsigned int background_color, unsigned char font);
 
-int color_printk(unsigned int FRcolor, unsigned int BKcolor, const char *fmt, ...);
+int color_printk(unsigned int front_color, unsigned int background_color, const char *fmt, ...);
