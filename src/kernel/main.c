@@ -1,14 +1,22 @@
 #include "gate.h"
+#include "lib.h"
 #include "memory.h"
 #include "printk.h"
 #include "trap.h"
 
 struct GlobalMemoryDescriptor memory_management_struct = {{{0}}, 0};
 
+extern char _text;
+extern char _etext;
+extern char _edata;
+extern char _end;
+
 void Start_Kernel(void)
 {
     unsigned int *addr = (unsigned int *)0xffff800000a00000;
     int i;
+
+    struct Page *page = NULL;
 
     Pos.x_resolution = 800;
     Pos.y_resolution = 600;
@@ -19,7 +27,7 @@ void Start_Kernel(void)
     Pos.y_char_size = 16;
 
     Pos.framebuffer = (unsigned int *)0xffff800000a00000;
-    Pos.fb_length = (Pos.x_resolution * Pos.y_resolution * 4);
+    Pos.fb_length = (Pos.x_resolution * Pos.y_resolution * 4 + PAGE_4K_SIZE - 1) & PAGE_4K_MASK;
 
     for (i = 0; i < 800 * 20; i++)
     {
@@ -71,7 +79,25 @@ void Start_Kernel(void)
     //     i = 1 / 0; // test interrupt
     // #pragma GCC diagnostic pop
 
+    memory_management_struct.start_code = (unsigned long)&_text;
+    memory_management_struct.end_code = (unsigned long)&_etext;
+    memory_management_struct.end_data = (unsigned long)&_edata;
+    memory_management_struct.end_brk = (unsigned long)&_end;
+
     init_memory();
+
+    color_printk(RED, BLACK, "memory_management_struct.bits_map: %#018lx\n", memory_management_struct.bits_map);
+    color_printk(RED, BLACK, "memory_management_struct.bits_map: %#018lx\n", memory_management_struct.bits_map + 1);
+
+    page = alloc_pages(ZONE_NORMAL, 64, PG_PTABLE_MAPED | PG_ACTIVE | PG_KERNEL);
+
+    for (i = 0; i <= 64; i++)
+    {
+        color_printk(INDIGO, BLACK, "page%d\tattribute: %#018lx\taddress: %#018lx\n", i, (page + i)->attribute, (page + i)->phys_address);
+    }
+
+    color_printk(RED, BLACK, "memory_management_struct.bits_map: %#018lx\n", memory_management_struct.bits_map);
+    color_printk(RED, BLACK, "memory_management_struct.bits_map: %#018lx\n", memory_management_struct.bits_map + 1);
 
     while (1)
         ;

@@ -54,7 +54,7 @@ setup_IDT:
     shlq $48, %rcx
     addq %rcx, %rax
     shrq $32, %rdx
-    leaq IDT_Table(%rip), %rdi
+    leaq idt_table(%rip), %rdi
     mov $256, %rcx
 rp_sidt:
     movq %rax, (%rdi)
@@ -64,7 +64,7 @@ rp_sidt:
     jne rp_sidt
 
 setup_TSS64:
-    leaq TSS64_Table(%rip), %rdx
+    leaq tss64_table(%rip), %rdx
     xorq %rax, %rax
     xorq %rcx, %rcx
     movq $0x89, %rax
@@ -79,7 +79,7 @@ setup_TSS64:
     shlq $16, %rcx
     addq %rcx, %rax
     addq $103, %rax
-    leaq GDT_Table(%rip), %rdi
+    leaq gdt_table(%rip), %rdi
     movq %rax, 64(%rdi)
     shrq $32, %rdx
     movq %rdx, 72(%rdi)
@@ -194,9 +194,9 @@ __PDE:
 
 
 .section .data
-// GDT_Table
-.globl GDT_Table
-GDT_Table:
+// gdt_table
+.globl gdt_table
+gdt_table:
     .quad 0x0000000000000000 /* 0 NULL descriptor 00 */
     .quad 0x0020980000000000 /* 1 KERNEL Code 64-bit Segment 08 */
     .quad 0x0000920000000000 /* 2 KERNEL Data 64-bit Segment 10 */
@@ -208,25 +208,25 @@ GDT_Table:
 GDT_END:
 
 GDT_POINTER:
-GDT_LIMIT: .word GDT_END - GDT_Table - 1
-GDT_BASE: .quad GDT_Table
+GDT_LIMIT: .word GDT_END - gdt_table - 1
+GDT_BASE: .quad gdt_table
 
-// IDT_Table
-.globl IDT_Table
-IDT_Table:
+// idt_table
+.globl idt_table
+idt_table:
     .fill 512, 8, 0
 IDT_END:
 
 IDT_POINTER:
-IDT_LIMIT: .word IDT_END - IDT_Table - 1
-IDT_BASE: .quad IDT_Table
+IDT_LIMIT: .word IDT_END - idt_table - 1
+IDT_BASE: .quad idt_table
 
-// TSS64_Table
-.globl TSS64_Table
-TSS64_Table:
+// tss64_table
+.globl tss64_table
+tss64_table:
     .fill 13, 8, 0
 TSS64_END:
 
 TSS64_POINTER:
-TSS64_LIMIT: .word TSS64_END - TSS64_Table - 1
-TSS64_BASE: .quad TSS64_Table
+TSS64_LIMIT: .word TSS64_END - tss64_table - 1
+TSS64_BASE: .quad tss64_table
