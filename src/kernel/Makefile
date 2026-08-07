@@ -30,7 +30,7 @@ kernel.bin: system
 
 clean:
 	rm -f *.o kernel.bin system
-	rm -f asm/*.o asm/*.s
+	rm -f **/*.o **/*.s
 
 install: all
 	mount $(IMG) /mnt -t vfat -o loop
