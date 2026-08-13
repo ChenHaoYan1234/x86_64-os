@@ -130,7 +130,7 @@ void init_interrupt()
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void do_IRQ(unsigned long regs, unsigned long nr) // regs:rsp,nr
 {
-    color_printk(RED, BLACK, "do_IRQ: %#08x\t", nr);
+    color_printk(RED, BLACK, "do_IRQ: %#08x\n", nr);
     io_out8(0x20, 0x20);
 }
 #pragma GCC diagnostic pop
