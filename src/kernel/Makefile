@@ -29,7 +29,7 @@ kernel.bin: system
 	$(OBJCOPY) -I elf64-x86-64 -S -R ".eh_frame" -R ".comment" -O binary system $@
 
 clean:
-	rm -f *.o kernel.bin system
+	rm -f *.o kernel.bin system system.map
 	rm -f **/*.o **/*.s
 
 install: all

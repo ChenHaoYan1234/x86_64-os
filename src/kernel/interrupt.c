@@ -1,48 +1,49 @@
-#include "gate.h"
 #include "interrupt.h"
+#include "linkage.h"
 #include "lib.h"
 #include "printk.h"
+#include "memory.h"
+#include "gate.h"
 
-#define SAVE_ALL            \
-    "cld \n\t"              \
-    "pushq %rax \n\t"       \
-    "pushq %rax \n\t"       \
-    "movq %es, %rax \n\t"   \
-    "pushq %rax \n\t"       \
-    "movq %ds, %rax \n\t"   \
-    "pushq %rax \n\t"       \
-    "xorq %rax, %rax \n\t"  \
-    "pushq %rbp \n\t"       \
-    "pushq %rdi \n\t"       \
-    "pushq %rsi \n\t"       \
-    "pushq %rdx \n\t"       \
-    "pushq %rcx \n\t"       \
-    "pushq %rbx \n\t"       \
-    "pushq %r8 \n\t"        \
-    "pushq %r9 \n\t"        \
-    "pushq %r10 \n\t"       \
-    "pushq %r11 \n\t"       \
-    "pushq %r12 \n\t"       \
-    "pushq %r13 \n\t"       \
-    "pushq %r14 \n\t"       \
-    "pushq %r15 \n\t"       \
-    "movq $0x10, %rdx \n\t" \
-    "movq %rdx, %ds \n\t"   \
-    "movq %rdx, %es \n\t"
+#define SAVE_ALL             \
+    "cld; \n\t"              \
+    "pushq %rax; \n\t"       \
+    "pushq %rax; \n\t"       \
+    "movq %es, %rax; \n\t"   \
+    "pushq %rax; \n\t"       \
+    "movq %ds, %rax; \n\t"   \
+    "pushq %rax; \n\t"       \
+    "xorq %rax, %rax; \n\t"  \
+    "pushq %rbp; \n\t"       \
+    "pushq %rdi; \n\t"       \
+    "pushq %rsi; \n\t"       \
+    "pushq %rdx; \n\t"       \
+    "pushq %rcx; \n\t"       \
+    "pushq %rbx; \n\t"       \
+    "pushq %r8; \n\t"        \
+    "pushq %r9; \n\t"        \
+    "pushq %r10; \n\t"       \
+    "pushq %r11; \n\t"       \
+    "pushq %r12; \n\t"       \
+    "pushq %r13; \n\t"       \
+    "pushq %r14; \n\t"       \
+    "pushq %r15; \n\t"       \
+    "movq $0x10, %rdx; \n\t" \
+    "movq %rdx, %ds; \n\t"   \
+    "movq %rdx, %es; \n\t"
 
 #define IRQ_NAME2(nr) nr##_interrupt(void)
 #define IRQ_NAME(nr) IRQ_NAME2(IRQ##nr)
 
-#define BUILD_IRQ(nr)                                                  \
-    void IRQ_NAME(nr);                                                 \
-    __asm__(                                                           \
-        SYMBOL_NAME_STR(IRQ) #nr "_interrupt:\n\t"                     \
-                                 "pushq $0x00 \n\t" SAVE_ALL           \
-                                 "movq %rsp, %rdi \n\t"                \
-                                 "leaq ret_from_intr(%rip), %rax \n\t" \
-                                 "pushq %rax \n\t"                     \
-                                 "movq $" #nr ", %rsi \n\t"            \
-                                 "jmp do_IRQ \n\t");
+#define BUILD_IRQ(nr)                                                      \
+    void IRQ_NAME(nr);                                                     \
+    __asm__(SYMBOL_NAME_STR(IRQ) #nr "_interrupt: \n\t"                    \
+                                     "pushq $0x00 \n\t" SAVE_ALL           \
+                                     "movq %rsp, %rdi \n\t"                \
+                                     "leaq ret_from_intr(%rip), %rax \n\t" \
+                                     "pushq %rax \n\t"                     \
+                                     "movq $" #nr ", %rsi \n\t"            \
+                                     "jmp do_IRQ \n\t");
 
 BUILD_IRQ(0x20)
 BUILD_IRQ(0x21)
@@ -106,22 +107,19 @@ void init_interrupt()
 
     color_printk(RED, BLACK, "8259A init\n");
 
-    color_printk(RED, BLACK, "8259A init: master\n");
-    // 8259A-master ICW 1-4
+    // 8259A-master ICW1-4
     io_out8(0x20, 0x11);
     io_out8(0x21, 0x20);
     io_out8(0x21, 0x04);
     io_out8(0x21, 0x01);
 
-    color_printk(RED, BLACK, "8259A init: slave\n");
-    // 8259A-slave ICW 1-4
+    // 8259A-slave ICW1-4
     io_out8(0xa0, 0x11);
     io_out8(0xa1, 0x28);
     io_out8(0xa1, 0x02);
     io_out8(0xa1, 0x01);
 
-    color_printk(RED, BLACK, "8259A init: OCW 1\n");
-    // 8259A-M/S OCW 1
+    // 8259A-M/S OCW1
     io_out8(0x21, 0x00);
     io_out8(0xa1, 0x00);
 
@@ -130,7 +128,7 @@ void init_interrupt()
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void do_IRQ(unsigned long regs, unsigned long nr)
+void do_IRQ(unsigned long regs, unsigned long nr) // regs:rsp,nr
 {
     color_printk(RED, BLACK, "do_IRQ: %#08x\t", nr);
     io_out8(0x20, 0x20);
