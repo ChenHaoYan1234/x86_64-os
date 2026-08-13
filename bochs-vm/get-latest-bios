@@ -1,4 +1,6 @@
 #!/bin/sh
 
+rm BIOS-bochs-latest VGABIOS-lgpl-latest.bin
+
 wget https://github.com/bochs-emu/Bochs/raw/refs/heads/master/bochs/bios/BIOS-bochs-latest
 wget https://github.com/bochs-emu/Bochs/raw/refs/heads/master/bochs/bios/VGABIOS-lgpl/VGABIOS-lgpl-latest.bin
