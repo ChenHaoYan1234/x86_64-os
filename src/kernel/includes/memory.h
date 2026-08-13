@@ -154,7 +154,7 @@ void init_memory();
 
 unsigned long page_init(struct Page *page, unsigned long flags);
 
-struct Page *alloc_pages(int zone_select, int number, unsigned long page_flags);
+struct Page *alloc_pages(int zone_select, unsigned int number, unsigned long page_flags);
 
 static inline unsigned long *get_gdt()
 {

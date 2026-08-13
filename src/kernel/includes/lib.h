@@ -2,6 +2,18 @@
 
 #define NULL 0
 
+#define sti() __asm__ __volatile__("sti \n\t" ::: "memory")
+
+static inline void io_out8(unsigned short port, unsigned char data)
+{
+    __asm__ __volatile__(
+        "outb %0, %%dx \n\t"
+        "mfence \n\t"
+        :
+        : "a"(data), "d"(port)
+        : "memory");
+}
+
 static inline int strlen(char *string)
 {
     register int __res;

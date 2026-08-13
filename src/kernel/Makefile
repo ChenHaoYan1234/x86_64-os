@@ -5,10 +5,10 @@ OBJCOPY = objcopy
 
 INCLUDE_FLAGS = -I./includes
 
-CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror
-LDFLAGS = -b elf64-x86-64  -z muldefs -T kernel.lds
+CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror -Wextra
+LDFLAGS = -b elf64-x86-64 -z muldefs -T kernel.lds -Map=system.map
 
-OBJS_C = $(patsubst %.c, %.o, $(wildcard *.c))
+OBJS_C = $(filter-out interrupt.o, $(patsubst %.c, %.o, $(wildcard *.c))) interrupt.o
 OBJS_ASM = asm/head.o $(filter-out asm/head.o, $(patsubst asm/%.S, asm/%.o, $(wildcard asm/*.S)))
 
 IMG = ../../bochs-vm/boot.img

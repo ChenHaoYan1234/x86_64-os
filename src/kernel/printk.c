@@ -218,9 +218,10 @@ int vsprintf(char *buf, const char *fmt, va_list args)
             str = number(str, (unsigned long)va_arg(args, void *), 16, field_width, precision, flags);
             break;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
         case 'x':
             flags |= SMALL;
-
         case 'X':
             if (qualifier == 'l')
                 str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
@@ -237,6 +238,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
             else
                 str = number(str, va_arg(args, unsigned int), 10, field_width, precision, flags);
             break;
+#pragma GCC diagnostic pop
 
         case 'n':
             if (qualifier == 'l')

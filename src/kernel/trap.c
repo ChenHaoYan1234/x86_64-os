@@ -151,7 +151,7 @@ void do_page_fault(unsigned long rsp, unsigned long error_code)
     __asm__ __volatile__("movq %%cr2, %0" : "=r"(cr2) : : "memory");
     p = (unsigned long *)(rsp + 0x98);
 
-    color_printk(RED, BLACK, "do_page_fault(14), ERROR_CODE: %#018lx, RSP: %#018lx, RIP: %#018lx", error_code, rsp, *p, cr2);
+    color_printk(RED, BLACK, "do_page_fault(14), ERROR_CODE: %#018lx, RSP: %#018lx, RIP: %#018lx\t", error_code, rsp, *p, cr2);
 
     if (!(error_code & 0x01))
         color_printk(RED, BLACK, "Page Not-Present,\t");

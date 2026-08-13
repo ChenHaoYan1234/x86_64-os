@@ -10,7 +10,7 @@ unsigned long *global_cr3 = NULL;
 
 void init_memory()
 {
-    int i, j;
+    unsigned int i, j;
     unsigned long total_mem = 0;
     struct E820 *p = NULL;
 
@@ -126,7 +126,7 @@ void init_memory()
 
     // init address - to page struct 0 because the memory_management_struct.e820[0].type != 1
     memory_management_struct.pages->zone = memory_management_struct.zones;
-    memory_management_struct.pages->phys_address = 0;
+    memory_management_struct.pages->phys_address = 0UL;
     memory_management_struct.pages->attribute = 0;
     memory_management_struct.pages->reference_count = 0;
     memory_management_struct.pages->age = 0;
@@ -201,12 +201,12 @@ unsigned long page_init(struct Page *page, unsigned long flags)
     return 0;
 }
 
-struct Page *alloc_pages(int zone_select, int number, unsigned long page_flags)
+struct Page *alloc_pages(int zone_select, unsigned int number, unsigned long page_flags)
 {
-    int i;
+    unsigned int i;
     unsigned long page = 0;
-    int zone_start = 0;
-    int zone_end = 0;
+    unsigned int zone_start = 0;
+    unsigned int zone_end = 0;
 
     switch (zone_select)
     {
