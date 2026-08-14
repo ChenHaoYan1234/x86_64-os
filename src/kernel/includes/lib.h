@@ -14,6 +14,18 @@ static inline void io_out8(unsigned short port, unsigned char data)
         : "memory");
 }
 
+static inline unsigned char io_in8(unsigned short port)
+{
+    unsigned char ret = 0;
+    __asm__ __volatile__(
+        "inb %%dx, %0 \n\t"
+        "mfence \n\t"
+        : "=a"(ret)
+        : "d"(port)
+        : "memory");
+    return ret;
+}
+
 static inline int strlen(char *string)
 {
     register int __res;

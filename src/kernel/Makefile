@@ -5,7 +5,7 @@ OBJCOPY = objcopy
 
 INCLUDE_FLAGS = -I./includes
 
-CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror -Wextra
+CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror -Wextra -std=gnu23
 LDFLAGS = -b elf64-x86-64 -z muldefs -T kernel.lds -Map=system.map
 
 OBJS_C = $(filter-out interrupt.o, $(patsubst %.c, %.o, $(wildcard *.c))) interrupt.o
