@@ -8,7 +8,6 @@ SECTIONS
     {
         _text = .;
         *(.text)
-
         _etext = .;
     }
 
@@ -17,15 +16,26 @@ SECTIONS
     {
         _data = .;
         *(.data)
-
         _edata = .;
+    }
+
+    .rodata :
+    {
+        _rodata = .;
+        *(.rodata)
+        _erodata = .;
+    }
+
+    . = ALIGN(32768);
+    .data.init_task :
+    {
+        *(.data.init_task)
     }
 
     .bss :
     {
         _bss = .;
         *(.bss)
-
         _ebss = .;
     }
 

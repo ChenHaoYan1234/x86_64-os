@@ -78,11 +78,16 @@
         unsigned long tmpreg;     \
         __asm__ __volatile__(     \
             "movq %%cr3, %0 \n\t" \
-            "movq %0 ,%%cr3 \n\t" \
+            "movq %0, %%cr3 \n\t" \
             : "=r"(tmpreg)        \
             :                     \
             : "memory");          \
     } while (0);
+
+typedef struct
+{
+    unsigned long pml4t;
+} pml4t_t;
 
 struct E820
 {

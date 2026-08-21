@@ -126,8 +126,6 @@ void init_interrupt()
     sti();
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 void do_IRQ(unsigned long regs, unsigned long nr) // regs:rsp,nr
 {
     unsigned char x;
@@ -136,4 +134,3 @@ void do_IRQ(unsigned long regs, unsigned long nr) // regs:rsp,nr
     color_printk(RED, BLACK, "key code: %#08x\n", x);
     io_out8(0x20, 0x20);
 }
-#pragma GCC diagnostic pop

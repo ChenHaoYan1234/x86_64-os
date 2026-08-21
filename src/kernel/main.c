@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "memory.h"
 #include "printk.h"
+#include "task.h"
 #include "trap.h"
 
 struct GlobalMemoryDescriptor memory_management_struct = {0};
@@ -88,6 +89,9 @@ void Start_Kernel(void)
 
     color_printk(RED,BLACK, "interrupt init\n");
     init_interrupt();
+
+    color_printk(RED, BLACK, "task init\n");
+    task_init();
 
     while (1)
         ;

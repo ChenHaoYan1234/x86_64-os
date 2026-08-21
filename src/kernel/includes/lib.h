@@ -4,6 +4,12 @@
 
 #define sti() __asm__ __volatile__("sti \n\t" ::: "memory")
 
+#define container_of(ptr, type, member)                                     \
+    ({                                                                      \
+        typeof(((type *)0)->member) *p = (ptr);                             \
+        (type *)((unsigned long)p - (unsigned long)&(((type *)0)->member)); \
+    })
+
 static inline void io_out8(unsigned short port, unsigned char data)
 {
     __asm__ __volatile__(
@@ -64,3 +70,28 @@ static inline void *memset(void *dest, unsigned char val, unsigned long size)
         : "memory");
     return dest;
 }
+
+static void *memcpy(void *dest, void *src, unsigned long size)
+{
+    int d0, d1, d2;
+    __asm__ __volatile__(
+        "cld \n\t"
+        "rep \n\t"
+        "movsq \n\t"
+        "testb $4, %b4 \n\t"
+        "je 1f \n\t"
+        "movsl \n\t"
+        "1: \n\t"
+        "testb $2, %b4 \n\t"
+        "je 2f \n\t"
+        "movsw \n\t"
+        "2: \n\t"
+        "testb $1, %b4 \n\t"
+        "je 3f \n\t"
+        "movsb \n\t"
+        "3: \n\t"
+        : "=&c"(d0), "=&D"(d1), "=&S"(d2)
+        : "0"(size / 8), "q"(size), "1"(dest), "2"(src)
+        : "memory");
+    return dest;
+};
