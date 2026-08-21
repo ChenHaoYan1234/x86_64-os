@@ -24,7 +24,8 @@ sudo make install
 
 ## How to run
 
-Run following commands
+1. Install bochs
+2. Run following commands
 
 ```
 cd ./bochs-vm
