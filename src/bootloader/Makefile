@@ -1,6 +1,6 @@
 NASM = nasm
 
-IMG = ../../bochs-vm/bochs.img
+IMG = ../../bochs-vm/boot.img
 
 all: loader.bin boot.bin
 
@@ -17,6 +17,6 @@ mbr: boot.bin
 
 install: loader.bin
 	mount $(IMG) /mnt -t vfat -o loop
-	cp loader.bin /nt
+	cp loader.bin /mnt
 	sync
 	umount /mnt
