@@ -2,6 +2,9 @@
 #include "printk.h"
 #include "lib.h"
 
+char buf[4096];
+struct Position Pos;
+
 int skip_atoi(const char **s)
 {
     int i = 0;
@@ -177,17 +180,17 @@ int vsprintf(char *buf, const char *fmt, va_list args)
                 while (--field_width > 0)
                     *str++ = ' ';
             *str++ = (unsigned char)va_arg(args, int);
-            while (++field_width > 0)
+            while (--field_width > 0)
                 *str++ = ' ';
             break;
 
         case 's':
             s = va_arg(args, char *);
             if (!s)
-                s = '\0';
+                s = "";
             len = strlen(s);
             if (precision < 0)
-                len = precision;
+                precision = len;
             else if (len > precision)
                 len = precision;
 
@@ -334,7 +337,7 @@ int color_printk(unsigned int front_color, unsigned int background_color, const 
         }
         else if ((unsigned char)*(buf + count) == '\t')
         {
-            line = ((Pos.x_position + 8) & (~(8 - 1) - Pos.x_position));
+            line = ((Pos.x_position + 8) & ~(8 - 1)) - Pos.x_position;
         Label_tab:
             line--;
             putchar(Pos.framebuffer, Pos.x_resolution, Pos.x_position * Pos.x_char_size, Pos.y_position * Pos.y_char_size, front_color, background_color, ' ');

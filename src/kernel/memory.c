@@ -18,22 +18,21 @@ void init_memory()
 
     p = (struct E820 *)0xffff800000007e00;
 
-    for (i = 0; i < 32; i++)
+    for (i = 0; i < 32; i++, p++)
     {
+        if (p->type < 1 || p->type > 4 || p->length == 0)
+            break;
+
         color_printk(ORANGE, BLACK, "Address: %#018lx\tLength: %#018lx\tType: %#010x\n",
                      p->address, p->length, p->type);
 
         if (p->type == 1)
             total_mem += p->length;
 
-        memory_management_struct.e820[i].address += p->address;
-        memory_management_struct.e820[i].length += p->length;
+        memory_management_struct.e820[i].address = p->address;
+        memory_management_struct.e820[i].length = p->length;
         memory_management_struct.e820[i].type = p->type;
         memory_management_struct.e820_length = i;
-
-        p++;
-        if (p->type > 4 || p->length == 0 || p->type < 1)
-            break;
     }
 
     color_printk(GREEN, BLACK, "Total RAM: %#018lx\n", total_mem);
@@ -144,7 +143,7 @@ void init_memory()
     memory_management_struct.pages->reference_count = 0;
     memory_management_struct.pages->age = 0;
 
-    memory_management_struct.zones_length = (memory_management_struct.zones_size * sizeof(struct Zone) + sizeof(long) - 1) & (!(sizeof(long) - 1));
+    memory_management_struct.zones_length = (memory_management_struct.zones_size * sizeof(struct Zone) + sizeof(long) - 1) & (~(sizeof(long) - 1));
 
     color_printk(ORANGE, BLACK, "bits_map: %018lx, bits_size: %018lx, bits_length: %018lx\n", memory_management_struct.bits_map, memory_management_struct.bits_size, memory_management_struct.bits_length);
     color_printk(ORANGE, BLACK, "pages: %018lx, pages_size: %018lx, pages_length: %018lx\n", memory_management_struct.pages, memory_management_struct.pages_size, memory_management_struct.pages_length);
@@ -183,8 +182,8 @@ void init_memory()
     color_printk(INDIGO, BLACK, "*global_cr3: %#018lx\n", *PHYS_TO_VIRT(global_cr3) & (~0xff));
     color_printk(INDIGO, BLACK, "**global_cr3: %#018lx\n", *PHYS_TO_VIRT(*PHYS_TO_VIRT(global_cr3) & (~0xff)) & (~0xff));
 
-    for (i = 0; i < 10; i++)
-        *(PHYS_TO_VIRT(global_cr3) + i) = 0UL;
+    // for (i = 0; i < 10; i++)
+    //     *(PHYS_TO_VIRT(global_cr3) + i) = 0UL;
 
     flush_tlb();
 }
@@ -234,7 +233,7 @@ struct Page *alloc_pages(int zone_select, unsigned int number, unsigned long pag
         break;
 
     case ZONE_UNMAPED:
-        zone_start = ZONE_NORMAL_INDEX;
+        zone_start = ZONE_UNMAPED_INDEX;
         zone_end = memory_management_struct.zones_size - 1;
         break;
 
@@ -250,7 +249,6 @@ struct Page *alloc_pages(int zone_select, unsigned int number, unsigned long pag
         unsigned long j;
         unsigned long start, end;
         // unsigned long length;
-        unsigned long tmp;
 
         if ((memory_management_struct.zones + i)->pages_free_count < number)
             continue;
@@ -260,26 +258,25 @@ struct Page *alloc_pages(int zone_select, unsigned int number, unsigned long pag
         end = z->zone_end_address >> PAGE_2M_SHIFT;
         // length = z->zone_length >> PAGE_2M_SHIFT;
 
-        tmp = 64 - start % 64;
-
-        for (j = start; j <= end; j += j % 64 ? tmp : 64)
+        for (j = start; j + number <= end; j++)
         {
+            unsigned long words = (memory_management_struct.bits_size + 63) / 64;
             unsigned long *p = memory_management_struct.bits_map + (j >> 6);
             unsigned long shift = j % 64;
-            unsigned long k;
-            for (k = shift; k < 64 - shift; k++)
+            unsigned long mask = (number == 64) ? ~0UL : ((1UL << number) - 1);
+            unsigned long win = *p >> shift;
+
+            if (shift && (j >> 6) + 1 < words)
+                win |= *(p + 1) << (64 - shift);
+
+            if (!(win & mask))
             {
-                if (!(((*p >> k) | (*(p + 1) << (64 - k))) & (number == 64 ? 0xffffffffffffffffUL : ((1UL << number) - 1))))
-                {
-                    unsigned long l;
-                    page = j + k - 1;
-                    for (l = 0; l < number; l++)
-                    {
-                        struct Page *x = memory_management_struct.pages + page + l;
-                        page_init(x, page_flags);
-                    }
-                    goto find_free_pages;
-                }
+                unsigned long k;
+
+                page = j;
+                for (k = 0; k < number; k++)
+                    page_init(memory_management_struct.pages + page + k, page_flags);
+                goto find_free_pages;
             }
         }
     }

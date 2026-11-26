@@ -17,8 +17,8 @@
 #define KERNEL_CS (0x08)
 #define KERNEL_DS (0x10)
 
-#define USER_CS (0x28)
-#define USER_DS (0x30)
+#define USER_CS (0x18)
+#define USER_DS (0x20)
 
 #define CLONE_FS (1 << 0)
 #define CLONE_FILES (1 << 1)
@@ -153,26 +153,15 @@ union task_union
     unsigned long stack[STACK_SIZE / sizeof(unsigned long)];
 } __attribute__((aligned(8)));
 
-struct thread_struct init_thread;
-struct mm_struct init_mm;
+extern union task_union init_task_union;
 
-union task_union init_task_union __attribute__((__section__(".data.init_task"))) = {INIT_TASK(init_task_union.task)};
+extern struct thread_struct init_thread;
 
-struct thread_struct init_thread = {
-    .rsp0 = (unsigned long)(init_task_union.stack + STACK_SIZE / sizeof(unsigned long)),
-    .rsp = (unsigned long)(init_task_union.stack + STACK_SIZE / sizeof(unsigned long)),
-    .fs = KERNEL_DS,
-    .gs = KERNEL_DS,
-    .cr2 = 0,
-    .trap_nr = 0,
-    .error_code = 0,
-};
+extern struct mm_struct init_mm;
 
-struct mm_struct init_mm = {0};
+extern struct task_struct *init_task[NR_CPUS];
 
-struct task_struct *init_task[NR_CPUS] = {&init_task_union.task, 0};
-
-struct tss_struct init_tss[NR_CPUS] = {[0 ... NR_CPUS - 1] = INIT_TSS};
+extern struct tss_struct init_tss[NR_CPUS];
 
 extern char _text;
 extern char _etext;

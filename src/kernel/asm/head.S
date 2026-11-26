@@ -45,6 +45,15 @@ entry64:
     movq %rax, %ss
     movq _stack_start(%rip), %rsp /* rsp address */
 
+// 清零 .bss：memory_management_struct / init_mm / Pos / buf 等都在这里，
+// 而 kernel.bin 恰好到 .bss 之前结束，loader 不会加载它们
+    leaq _bss(%rip), %rdi
+    leaq _ebss(%rip), %rcx
+    subq %rdi, %rcx
+    xorq %rax, %rax
+    cld
+    rep stosb
+
 setup_IDT:
     leaq ignore_int(%rip), %rdx
     movq $(0x08 << 16), %rax

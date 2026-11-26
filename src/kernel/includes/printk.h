@@ -30,7 +30,7 @@ __res; })
 
 extern unsigned char font_ascii[256][16];
 
-char buf[4096] = {0};
+extern char buf[4096];
 
 struct Position
 {
@@ -45,7 +45,9 @@ struct Position
 
     unsigned int *framebuffer;
     unsigned int fb_length;
-} Pos;
+};
+
+extern struct Position Pos;
 
 int skip_atoi(const char **s);
 

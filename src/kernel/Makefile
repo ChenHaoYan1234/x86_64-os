@@ -7,7 +7,7 @@ OBJDUMP = objdump
 INCLUDE_FLAGS = -I./includes
 
 CCFLAGS = -fno-stack-protector -mcmodel=large -fno-builtin -m64 -Wall -Werror -Wextra -std=gnu23 -Wno-unused-function -Wno-unused-parameter -g
-LDFLAGS = -b elf64-x86-64 -z muldefs -T kernel.lds -Map=system.map
+LDFLAGS = -b elf64-x86-64 -T kernel.lds -Map=system.map
 
 OBJS_C = $(filter-out interrupt.o, $(patsubst %.c, %.o, $(wildcard *.c))) interrupt.o
 OBJS_ASM = asm/head.o $(filter-out asm/head.o, $(patsubst asm/%.S, asm/%.o, $(wildcard asm/*.S)))
@@ -34,7 +34,7 @@ clean:
 	rm -f **/*.o **/*.s
 
 dump: system
-	$(OBJDUMP) -S system >> system.dump
+	$(OBJDUMP) -S system > system.dump
 
 install: all
 	mount $(IMG) /mnt -t vfat -o loop

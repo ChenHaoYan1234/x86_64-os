@@ -255,6 +255,15 @@ KillMotor:
     mov ebx, 0
     mov ax, 0x00
     mov es, ax
+
+; 0x7e00 同时也是内核临时扇区缓冲，先清 512 字节，
+; 保证 e820 列表之后一定有一个全 0 的终止项
+    mov di, MemoryStructBufferAddr
+    mov cx, 512 / 2
+    xor ax, ax
+    cld
+    rep stosw
+    
     mov di, MemoryStructBufferAddr
 
 Label_Get_Mem_Struct:
@@ -512,8 +521,6 @@ init_page_table:
 [SECTION .s32lib]
 [BITS 32]
 support_long_mode:
-    push eax
-    push edx
     mov eax, 0x80000000
     cpuid
     cmp eax, 0x80000001
@@ -525,8 +532,6 @@ support_long_mode:
     setc al
 support_long_mode_done:
     movzx eax, al
-    pop edx
-    pop eax
     ret
 
 [SECTION .s16lib]
@@ -605,7 +610,7 @@ Func_DispAL:
     mov edi, [DisplayPosition]
     mov ah, 0fh
     mov dl, al
-    mov al, 4
+    shr al, 4
     mov ecx, 2
 .begin:
     and al, 0fh

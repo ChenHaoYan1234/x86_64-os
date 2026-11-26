@@ -5,6 +5,27 @@
 #include "ptrace.h"
 #include "task.h"
 
+struct thread_struct init_thread;
+struct mm_struct init_mm;
+
+union task_union init_task_union __attribute__((__section__(".data.init_task"))) = {INIT_TASK(init_task_union.task)};
+
+struct thread_struct init_thread = {
+    .rsp0 = (unsigned long)(init_task_union.stack + STACK_SIZE / sizeof(unsigned long)),
+    .rsp = (unsigned long)(init_task_union.stack + STACK_SIZE / sizeof(unsigned long)),
+    .fs = KERNEL_DS,
+    .gs = KERNEL_DS,
+    .cr2 = 0,
+    .trap_nr = 0,
+    .error_code = 0,
+};
+
+struct mm_struct init_mm = {0};
+
+struct task_struct *init_task[NR_CPUS] = {&init_task_union.task, 0};
+
+struct tss_struct init_tss[NR_CPUS] = {[0 ... NR_CPUS - 1] = INIT_TSS};
+
 unsigned long init(unsigned long arg)
 {
     color_printk(RED, BLACK, "init task is running, arg: %#018lx\n", arg);
@@ -23,6 +44,11 @@ unsigned long do_fork(struct pt_regs *regs, unsigned long clone_flags, unsigned 
     p = alloc_pages(ZONE_NORMAL, 1, PG_PTABLE_MAPED | PG_ACTIVE | PG_KERNEL);
 
     color_printk(WHITE, BLACK, "alloc_pages, bitmap: %#018lx\n", *memory_management_struct.bits_map);
+
+    if(!p){
+        color_printk(RED,BLACK,"do_fork:alloc_pages failed\n");
+        return -1;
+    }
 
     tsk = (struct task_struct *)PHYS_TO_VIRT(p->phys_address);
     color_printk(WHITE, BLACK, "struct task_struct address: %#18lx\n", (unsigned long)tsk);
