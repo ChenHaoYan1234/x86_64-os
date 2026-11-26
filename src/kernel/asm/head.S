@@ -43,7 +43,7 @@ entry64:
     movq %rax, %es
     movq %rax, %gs
     movq %rax, %ss
-    movq $0xffff800000007e00, %rsp /* rsp address */
+    movq _stack_start(%rip), %rsp /* rsp address */
 
 setup_IDT:
     leaq ignore_int(%rip), %rdx
