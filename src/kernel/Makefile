@@ -2,6 +2,7 @@ CC = gcc
 AS = as
 LD = ld
 OBJCOPY = objcopy
+OBJDUMP = objdump
 
 INCLUDE_FLAGS = -I./includes
 
@@ -29,8 +30,11 @@ kernel.bin: system
 	$(OBJCOPY) -I elf64-x86-64 -S -R ".eh_frame" -R ".comment" -O binary system $@
 
 clean:
-	rm -f *.o kernel.bin system system.map
+	rm -f *.o kernel.bin system system.map system.dump
 	rm -f **/*.o **/*.s
+
+dump: system
+	$(OBJDUMP) -S system >> system.dump
 
 install: all
 	mount $(IMG) /mnt -t vfat -o loop
