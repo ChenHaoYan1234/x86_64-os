@@ -57,7 +57,20 @@ void init_memory()
 
     color_printk(ORANGE, BLACK, "Total 2M PAGEs: %#010x=%010d\n", total_mem, total_mem);
 
-    total_mem = memory_management_struct.e820[memory_management_struct.e820_length].address + memory_management_struct.e820[memory_management_struct.e820_length].length;
+    // total_mem = memory_management_struct.e820[memory_management_struct.e820_length].address + memory_management_struct.e820[memory_management_struct.e820_length].length;
+
+    total_mem = 0;
+    for (i = 0; i <= memory_management_struct.e820_length; i++)
+    {
+        unsigned long end;
+
+        if (memory_management_struct.e820[i].type != 1)
+            continue;
+
+        end = memory_management_struct.e820[i].address + memory_management_struct.e820[i].length;
+        if (end > total_mem)
+            total_mem = end;
+    }
 
     memory_management_struct.bits_map = (unsigned long *)((memory_management_struct.end_brk + PAGE_4K_SIZE - 1) & PAGE_4K_MASK);
     memory_management_struct.bits_size = total_mem >> PAGE_2M_SHIFT;
