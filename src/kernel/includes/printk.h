@@ -1,7 +1,9 @@
 #pragma once
 
 #include <stdarg.h>
+
 #include "font.h"
+#include "video.h"
 
 #define ZEROPAD 1  /* pad with zero */
 #define SIGN 2     /* unsigned/signed long */
@@ -31,23 +33,6 @@ __res; })
 extern unsigned char font_ascii[256][16];
 
 extern char buf[4096];
-
-struct Position
-{
-    int x_resolution;
-    int y_resolution;
-
-    int x_position;
-    int y_position;
-
-    int x_char_size;
-    int y_char_size;
-
-    unsigned int *framebuffer;
-    unsigned int fb_length;
-};
-
-extern struct Position Pos;
 
 int skip_atoi(const char **s);
 

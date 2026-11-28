@@ -5,6 +5,7 @@
 #include "printk.h"
 #include "task.h"
 #include "trap.h"
+#include "video.h"
 
 struct GlobalMemoryDescriptor memory_management_struct = {0};
 
@@ -26,7 +27,7 @@ void Start_Kernel(void)
     Pos.x_char_size = 8;
     Pos.y_char_size = 16;
 
-    Pos.framebuffer = (unsigned int *)0xffff800000a00000;
+    init_framebuffer();
     Pos.fb_length = (Pos.x_resolution * Pos.y_resolution * 4 + PAGE_4K_SIZE - 1) & PAGE_4K_MASK;
 
     for (i = 0; i < 800 * 20; i++)

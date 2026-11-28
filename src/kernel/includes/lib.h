@@ -10,6 +10,8 @@
         (type *)((unsigned long)p - (unsigned long)&(((type *)0)->member)); \
     })
 
+extern unsigned long __PDE[];
+
 static inline void io_out8(unsigned short port, unsigned char data)
 {
     __asm__ __volatile__(

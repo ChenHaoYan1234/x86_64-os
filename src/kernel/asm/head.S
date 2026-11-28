@@ -190,13 +190,14 @@ __PDPTE:
 
 .org 0x3000
 
+.global __PDE
 __PDE:
     .quad 0x000083
     .quad 0x200083
     .quad 0x400083
     .quad 0x600083
     .quad 0x800083
-    .quad 0xe0000083 /* 0xa00000 */
+    .quad 0xa00083 /* 0xa00000: remapped to the VBE LFB at boot */
     .quad 0xe0200083
     .quad 0xe0400083
     .quad 0xe0600083 /* 0x1000000 */
